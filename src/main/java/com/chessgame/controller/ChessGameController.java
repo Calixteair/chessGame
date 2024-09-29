@@ -49,7 +49,7 @@ public class ChessGameController {
      * @param endY Position d'arrivée en Y.
      * @return Message de résultat du mouvement.
      */
-    public String movePiece(int startX, int startY, int endX, int endY) {
+    public boolean movePiece(int startX, int startY, int endX, int endY) {
         // Vérifie si la destination est dans la liste des mouvements possibles
         boolean isValidDestination = false;
         for (int[] move : possibleMoves) {
@@ -60,7 +60,7 @@ public class ChessGameController {
         }
 
         if (!isValidDestination) {
-            return "Mouvement invalide : destination non autorisée.";
+            return false;
         }
 
         // Tente de déplacer la pièce
@@ -71,15 +71,17 @@ public class ChessGameController {
             if (chessGame.isKingInCheck(currentPlayer.isWhite())) {
                 // Annule le mouvement si le roi est en échec
                 board.undoMove(); // Assure-toi que la méthode undoMove est implémentée
-                return "Mouvement annulé : le roi est en échec.";
+                return false;
             } else {
                 // Change de joueur si le mouvement est valide
+                Piece piece = board.getPiece(endX, endY);
+                piece.findValidMove(board);
                 chessGame.switchPlayer();
                 currentPlayer = chessGame.getCurrentPlayer();
-                return "Mouvement effectué avec succès.";
+                return true;
             }
         } else {
-            return "Mouvement invalide : impossible de déplacer la pièce.";
+            return false;
         }
     }
 
@@ -116,4 +118,7 @@ public class ChessGameController {
     public Board getBoard() {
         return board;
     }
+
+
+    //TODO: roque et promotion de pion
 }
