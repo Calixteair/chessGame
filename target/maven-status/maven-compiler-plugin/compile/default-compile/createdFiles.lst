@@ -1,0 +1,13 @@
+com/chessgame/controller/ChessGameController.class
+com/chessgame/model/pieces/Rook.class
+com/chessgame/model/pieces/Bishop.class
+com/chessgame/model/pieces/Piece.class
+com/chessgame/model/pieces/Pawn.class
+com/chessgame/utils/TypePiece.class
+com/chessgame/model/Player.class
+com/chessgame/model/ChessGame.class
+com/chessgame/utils/Move.class
+com/chessgame/model/Board.class
+com/chessgame/model/pieces/Knight.class
+com/chessgame/model/pieces/King.class
+com/chessgame/model/pieces/Queen.class

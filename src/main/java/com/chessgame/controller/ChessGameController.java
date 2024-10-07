@@ -76,7 +76,6 @@ public class ChessGameController {
                 // Change de joueur si le mouvement est valide
                 Piece piece = board.getPiece(endX, endY);
                 piece.findValidMove(board);
-                chessGame.switchPlayer();
                 currentPlayer = chessGame.getCurrentPlayer();
                 return true;
             }

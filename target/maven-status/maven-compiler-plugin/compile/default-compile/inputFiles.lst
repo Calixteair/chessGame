@@ -1,0 +1,13 @@
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/pieces/Rook.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/pieces/King.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/pieces/Pawn.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/ChessGame.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/controller/ChessGameController.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/pieces/Piece.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/Player.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/pieces/Bishop.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/pieces/Queen.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/pieces/Knight.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/utils/Move.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/Board.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/utils/TypePiece.java

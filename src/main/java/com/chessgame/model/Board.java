@@ -32,9 +32,10 @@ public class Board {
 
     // Déplace une pièce d'une position à une autre (si le mouvement est valide)
     public boolean movePiece(int startX, int startY, int endX, int endY) {
+        Move move = new Move(startX, startY, endX, endY);
         if (isWithinBounds(startX, startY) && isWithinBounds(endX, endY)) {
             Piece piece = getPiece(startX, startY);
-            if (piece != null && piece.isValidMove(startX, startY, endX, endY, this)) {
+            if (piece != null && piece.validMoves.contains(move)) {
                 board[endX][endY] = piece;  // Place la pièce à la nouvelle position
                 board[startX][startY] = null;  // Vide l'ancienne position
                 lastMove = new Move(startX, startY, endX, endY);
@@ -69,18 +70,8 @@ public class Board {
         }
     }
 
-    // Méthode pour afficher le plateau (utile pour le débogage)
-    public void printBoard() {
-        for (int y = 7; y >= 0; y--) {  // On parcourt en sens inverse pour que l'affichage soit en coordonnées classiques (1 à 8, A à H)
-            for (int x = 0; x < BOARD_SIZE; x++) {
-                Piece piece = getPiece(x, y);
-                if (piece == null) {
-                    System.out.print(". ");
-                } else {
-                    System.out.print(piece.getClass().getSimpleName().charAt(0) + " ");
-                }
-            }
-            System.out.println();
-        }
+
+    public Piece[][] getBoard() {
+        return board;
     }
 }
