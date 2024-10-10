@@ -3,7 +3,9 @@ package com.chessgame.model;
 import com.chessgame.model.pieces.Piece;
 import com.chessgame.utils.Move;
 
-public class Board {
+import java.io.Serializable;
+
+public class Board implements Serializable {
 
     private Piece[][] board;  // Le plateau d'échecs est une matrice 8x8 de pièces
 

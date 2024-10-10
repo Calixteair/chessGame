@@ -3,10 +3,12 @@ package com.chessgame.model;
 import com.chessgame.model.pieces.*;
 import com.chessgame.utils.Move;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ChessGame {
+public class ChessGame implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private Board board;
     private Player whitePlayer;
     private Player blackPlayer;
@@ -16,6 +18,17 @@ public class ChessGame {
     public ChessGame() {
         initializeGame();
     }
+
+    public ChessGame(String pseudo1) {
+        initializeGame(pseudo1);
+    }
+
+    public ChessGame(String pseudo1, String pseudo2) {
+        initializeGame(pseudo1, pseudo2);
+    }
+
+
+
 
     // Initialise le plateau et les pièces
     private void initializeGame() {
@@ -28,6 +41,32 @@ public class ChessGame {
         putPieceOnBoard();
         givePieceToPlayers();
     }
+
+
+    private void initializeGame(String pseudo1) {
+        board = new Board();
+        whitePlayer = new Player(true, board, pseudo1);
+        blackPlayer = new Player(false, board, "Black");
+        currentPlayer = whitePlayer;
+        gameOver = false;
+
+        putPieceOnBoard();
+        givePieceToPlayers();
+    }
+
+    private void initializeGame(String pseudo1, String pseudo2) {
+        board = new Board();
+        whitePlayer = new Player(true, board, pseudo1);
+        blackPlayer = new Player(false, board, pseudo2);
+        currentPlayer = whitePlayer;
+        gameOver = false;
+
+        putPieceOnBoard();
+        givePieceToPlayers();
+    }
+
+
+
 
     public void putPieceOnBoard(){
         for (int i = 0; i < 8; i++) {

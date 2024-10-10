@@ -4,10 +4,11 @@ import com.chessgame.model.Board;
 import com.chessgame.utils.Move;
 import com.chessgame.utils.TypePiece;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Piece {
+public abstract class Piece implements Serializable {
 
 
     private final int x;

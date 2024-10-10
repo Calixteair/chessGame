@@ -1,6 +1,8 @@
 package com.chessgame.utils;
 
-public class Move {
+import java.io.Serializable;
+
+public class Move implements Serializable {
 
     private int startX;
     private int startY;

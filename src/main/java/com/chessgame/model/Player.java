@@ -3,10 +3,11 @@ package com.chessgame.model;
 import com.chessgame.model.pieces.Piece;
 import com.chessgame.utils.TypePiece;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player {
+public class Player implements Serializable {
 
     private boolean isWhite; // True si le joueur joue les pièces blanches, false sinon
     private List<Piece> pieces; // Liste des pièces contrôlées par le joueur
