@@ -37,7 +37,6 @@ public class ChessGame implements Serializable {
         blackPlayer = new Player(false, board, "Black");
         currentPlayer = whitePlayer;
         gameOver = false;
-
         putPieceOnBoard();
         givePieceToPlayers();
     }
@@ -49,7 +48,6 @@ public class ChessGame implements Serializable {
         blackPlayer = new Player(false, board, "Black");
         currentPlayer = whitePlayer;
         gameOver = false;
-
         putPieceOnBoard();
         givePieceToPlayers();
     }
@@ -64,6 +62,19 @@ public class ChessGame implements Serializable {
         putPieceOnBoard();
         givePieceToPlayers();
     }
+
+    public void setWhitePlayer(Player whitePlayer) {
+        this.whitePlayer = whitePlayer;
+    }
+
+    public void setBlackPlayer(Player blackPlayer) {
+        this.blackPlayer = blackPlayer;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
 
 
 

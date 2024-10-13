@@ -12,13 +12,21 @@ import java.util.List;
 
 public class ChessGameController {
 
-    private ChessGame chessGame;
+    public ChessGame chessGame;
     private Board board;
     private Player currentPlayer;
+    public List<Move> moveHistory = new ArrayList<>();
     private List<int[]> possibleMoves; // Liste des mouvements possibles pour une pièce sélectionnée
 
     public ChessGameController() {
         this.chessGame = new ChessGame();
+        this.board = chessGame.getBoard();
+        this.currentPlayer = chessGame.getCurrentPlayer();
+        this.possibleMoves = new ArrayList<>();
+    }
+
+        public ChessGameController(String pseudo1, String pseudo2) {
+        this.chessGame = new ChessGame(pseudo1, pseudo2);
         this.board = chessGame.getBoard();
         this.currentPlayer = chessGame.getCurrentPlayer();
         this.possibleMoves = new ArrayList<>();
@@ -117,6 +125,7 @@ public class ChessGameController {
     public Board getBoard() {
         return board;
     }
+
 
 
     //TODO: roque et promotion de pion
