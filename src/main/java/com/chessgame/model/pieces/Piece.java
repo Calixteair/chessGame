@@ -11,8 +11,8 @@ import java.util.List;
 public abstract class Piece implements Serializable {
 
 
-    private final int x;
-    private final int y;
+    private int x;
+    private int y;
     protected boolean isWhite;
     public List<Move> validMoves = new ArrayList<>();
 
@@ -34,6 +34,19 @@ public abstract class Piece implements Serializable {
 
     public int getY() {
         return y;
+    }
+
+    public int getRow() {
+        return x;
+    }
+
+    public int getColumn() {
+        return y;
+    }
+
+    public void move(Move move) {
+        this.x = move.getEndX();
+        this.y = move.getEndY();
     }
 
     public List<Move> getValidMoves() {

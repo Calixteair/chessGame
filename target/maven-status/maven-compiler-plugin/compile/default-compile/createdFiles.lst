@@ -7,6 +7,7 @@ com/chessgame/utils/TypePiece.class
 com/chessgame/model/Player.class
 com/chessgame/model/ChessGame.class
 com/chessgame/utils/Move.class
+com/chessgame/model/pieces/Empty.class
 com/chessgame/model/Board.class
 com/chessgame/model/pieces/Knight.class
 com/chessgame/model/pieces/King.class

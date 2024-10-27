@@ -1,6 +1,7 @@
 package com.chessgame.utils;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Move implements Serializable {
 
@@ -31,4 +32,22 @@ public class Move implements Serializable {
     public int getEndY() {
         return endY;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Move move = (Move) o;
+        return startX == move.startX &&
+               startY == move.startY &&
+               endX == move.endX &&
+               endY == move.endY;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(startX, startY, endX, endY);
+    }
+
 }
+

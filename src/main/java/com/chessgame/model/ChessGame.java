@@ -58,6 +58,7 @@ public class ChessGame implements Serializable {
         blackPlayer = new Player(false, board, pseudo2);
         currentPlayer = whitePlayer;
         gameOver = false;
+        board.clearBoard();
 
         putPieceOnBoard();
         givePieceToPlayers();
@@ -80,6 +81,7 @@ public class ChessGame implements Serializable {
 
 
     public void putPieceOnBoard(){
+
         for (int i = 0; i < 8; i++) {
             board.setPiece(new Pawn(true,i,1),i, 1 );
             board.setPiece( new Pawn(false,i, 6),i, 6);

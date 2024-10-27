@@ -16,20 +16,17 @@ public class ChessGameController {
     private Board board;
     private Player currentPlayer;
     public List<Move> moveHistory = new ArrayList<>();
-    private List<int[]> possibleMoves; // Liste des mouvements possibles pour une pièce sélectionnée
 
     public ChessGameController() {
         this.chessGame = new ChessGame();
         this.board = chessGame.getBoard();
         this.currentPlayer = chessGame.getCurrentPlayer();
-        this.possibleMoves = new ArrayList<>();
     }
 
         public ChessGameController(String pseudo1, String pseudo2) {
         this.chessGame = new ChessGame(pseudo1, pseudo2);
         this.board = chessGame.getBoard();
         this.currentPlayer = chessGame.getCurrentPlayer();
-        this.possibleMoves = new ArrayList<>();
     }
 
     /**
@@ -38,58 +35,35 @@ public class ChessGameController {
      * @param y Position en Y de la pièce.
      * @return Liste des positions possibles sous forme de paires [x, y].
      */
-    public List<int[]> selectPiece(int x, int y) {
+    public List<Move> selectPiece(int x, int y) {
         Piece piece = board.getPiece(x, y);
-        possibleMoves.clear();
+
 
         if (piece != null && piece.isWhite() == currentPlayer.isWhite()) {
-            // Parcourir tout le plateau pour trouver les mouvements valides
-
+            return piece.validMoves;
         }
-        return new ArrayList<>(possibleMoves); // Retourne une copie de la liste
+        return new ArrayList<>();
     }
 
-    /**
-     * Tente de déplacer une pièce.
-     * @param startX Position de départ en X.
-     * @param startY Position de départ en Y.
-     * @param endX Position d'arrivée en X.
-     * @param endY Position d'arrivée en Y.
-     * @return Message de résultat du mouvement.
-     */
-    public boolean movePiece(int startX, int startY, int endX, int endY) {
+    public boolean movePiece(Move move) {
+        System.out.println("Move piece");
+        System.out.println(move.getStartX() + " " + move.getStartY() + " " + move.getEndX() + " " + move.getEndY());
         // Vérifie si la destination est dans la liste des mouvements possibles
-        boolean isValidDestination = false;
-        for (int[] move : possibleMoves) {
-            if (move[0] == endX && move[1] == endY) {
-                isValidDestination = true;
-                break;
-            }
-        }
+        Piece piece = board.getPiece(move.getStartX(), move.getStartY());
+        if(currentPlayer.getPieces().contains(piece) && piece.validMoves.contains(move)){
+            currentPlayer.movePiece(move);
+            moveHistory.add(move);
+            checkGameOver();
+            switchPlayer();
+            return true;
 
-        if (!isValidDestination) {
-            return false;
         }
+        return false;
+    }
 
-        // Tente de déplacer la pièce
-        boolean moveSuccess = board.movePiece(startX, startY, endX, endY);
-
-        if (moveSuccess) {
-            // Vérifie si le roi est en échec après le mouvement
-            if (chessGame.isKingInCheck(currentPlayer.isWhite())) {
-                // Annule le mouvement si le roi est en échec
-                board.undoMove(); // Assure-toi que la méthode undoMove est implémentée
-                return false;
-            } else {
-                // Change de joueur si le mouvement est valide
-                Piece piece = board.getPiece(endX, endY);
-                piece.findValidMove(board);
-                currentPlayer = chessGame.getCurrentPlayer();
-                return true;
-            }
-        } else {
-            return false;
-        }
+    public void switchPlayer() {
+        chessGame.switchPlayer();
+        currentPlayer = chessGame.getCurrentPlayer();
     }
 
 

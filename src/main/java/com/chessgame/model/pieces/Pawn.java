@@ -17,24 +17,29 @@ public class Pawn extends Piece {
 
     @Override
     public void findValidMove(Board board) {
+        System.out.println("in find move pawn");
         validMoves.clear();
         int direction = isWhite() ? 1 : -1;
-        int newX = getX() + direction;
-        if (newX >= 0 && newX < 8) {
-            if (board.getPiece(newX, getY()) == null) {
-                validMoves.add(new Move(getX(), getY(), newX, getY()));
+        int newY = getY() + direction;
+        System.out.println(newY);
+        if (newY >= 0 && newY < 8) {
+            System.out.println(board.getPiece(getX(), newY));
+            if (board.getPiece(getX(), newY).getType() == TypePiece.EMPTY) {
+                System.out.println("allo");
+                validMoves.add(new Move(getX(), getY(), getX(), newY));
+                System.out.println("already " + alreadyMove);
                 if (!alreadyMove) {
-                    newX += direction;
-                    if (newX >= 0 && newX < 8 && board.getPiece(newX, getY()) == null) {
-                        validMoves.add(new Move(getX(), getY(), newX, getY()));
+                    newY += direction;
+                    if (newY >= 0 && newY < 8 && board.getPiece(getX(), newY).getType() == TypePiece.EMPTY) {
+                        validMoves.add(new Move(getX(), getY(), getX(), newY));
                     }
                 }
             }
-            if (getY() > 0 && board.getPiece(newX, getY() - 1) != null && board.getPiece(newX, getY() - 1).isWhite() != isWhite()) {
-                validMoves.add(new Move(getX(), getY(), newX, getY() - 1));
+            if (getX() > 0 && board.getPiece(getX() - 1, newY - direction).getType() != TypePiece.EMPTY  && board.getPiece(getX() -1,newY - direction).isWhite() != isWhite()) {
+                validMoves.add(new Move(getX(), getY(), getX()-1, newY - direction));
             }
-            if (getY() < 7 && board.getPiece(newX, getY() + 1) != null && board.getPiece(newX, getY() + 1).isWhite() != isWhite()) {
-                validMoves.add(new Move(getX(), getY(), newX, getY() + 1));
+            if (getX() < 7 && board.getPiece(getX() + 1, newY - direction).getType() != TypePiece.EMPTY && board.getPiece(getX()+ 1, newY - direction).isWhite() != isWhite()) {
+                validMoves.add(new Move(getX(), getY(), getX()+ 1, newY - direction));
             }
         }
     }

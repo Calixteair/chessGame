@@ -1,6 +1,7 @@
 package com.chessgame.model;
 
 import com.chessgame.model.pieces.Piece;
+import com.chessgame.utils.Move;
 import com.chessgame.utils.TypePiece;
 
 import java.io.Serializable;
@@ -48,12 +49,14 @@ public class Player implements Serializable {
     }
 
     // Déplace une pièce contrôlée par le joueur
-    public boolean movePiece(int startX, int startY, int endX, int endY) {
-        Piece piece = board.getPiece(startX, startY);
+    public boolean movePiece(Move move) {
+        Piece piece = board.getPiece(move.getStartX(), move.getStartY());
 
         // Vérifie que la pièce appartient bien au joueur
         if (piece != null && piece.isWhite() == this.isWhite) {
-            return board.movePiece(startX, startY, endX, endY);  // Tente de déplacer la pièce sur le plateau
+            piece.move(move);
+            return board.movePiece(move);  // Tente de déplacer la pièce sur le plateau
+
         }
         return false;  // Si le joueur ne contrôle pas la pièce ou le mouvement est invalide
     }

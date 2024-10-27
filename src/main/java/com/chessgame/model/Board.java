@@ -1,5 +1,6 @@
 package com.chessgame.model;
 
+import com.chessgame.model.pieces.Empty;
 import com.chessgame.model.pieces.Piece;
 import com.chessgame.utils.Move;
 
@@ -24,6 +25,14 @@ public class Board implements Serializable {
         }
     }
 
+    public void clearBoard(){
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++){
+                board[i][j] = new Empty(true,i, j);
+            }
+        }
+    }
+
     // Récupère la pièce à une position donnée
     public Piece getPiece(int x, int y) {
         if (isWithinBounds(x, y)) {
@@ -33,14 +42,17 @@ public class Board implements Serializable {
     }
 
     // Déplace une pièce d'une position à une autre (si le mouvement est valide)
-    public boolean movePiece(int startX, int startY, int endX, int endY) {
-        Move move = new Move(startX, startY, endX, endY);
-        if (isWithinBounds(startX, startY) && isWithinBounds(endX, endY)) {
+    public boolean movePiece(Move move) {
+        int startX = move.getStartX();
+        int startY = move.getStartY();
+        int endX = move.getEndX();
+        int endY = move.getEndY();
+        if (isWithinBounds(startX,startY) && isWithinBounds(endX,endY)) {
             Piece piece = getPiece(startX, startY);
             if (piece != null && piece.validMoves.contains(move)) {
                 board[endX][endY] = piece;  // Place la pièce à la nouvelle position
                 board[startX][startY] = null;  // Vide l'ancienne position
-                lastMove = new Move(startX, startY, endX, endY);
+                lastMove = move;
                 return true;
             }
         }

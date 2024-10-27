@@ -9,5 +9,6 @@
 /home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/pieces/Queen.java
 /home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/pieces/Knight.java
 /home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/utils/Move.java
+/home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/pieces/Empty.java
 /home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/model/Board.java
 /home/kalinux/github/chessGame/chessGame/src/main/java/com/chessgame/utils/TypePiece.java
