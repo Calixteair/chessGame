@@ -1,11 +1,14 @@
 package com.chessgame.model;
 
+import com.chessgame.controller.ChessGameController;
+import com.chessgame.model.pieces.Decoy;
 import com.chessgame.model.pieces.Piece;
 import com.chessgame.utils.Move;
 import com.chessgame.utils.TypePiece;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Player implements Serializable {
@@ -80,5 +83,16 @@ public class Player implements Serializable {
         for (Piece piece : pieces) {
             piece.findValidMove(board);
         }
+    }
+
+public void decoyCheck() {
+    // Suppression sécurisée
+    pieces.removeIf(piece -> piece.getType() == TypePiece.DECOY);
+}
+
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

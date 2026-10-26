@@ -18,4 +18,5 @@ public class Empty extends Piece{
     public TypePiece getType(){
         return typePiece;
     }
+
 }

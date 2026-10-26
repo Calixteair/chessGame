@@ -83,34 +83,34 @@ public class ChessGame implements Serializable {
     public void putPieceOnBoard(){
 
         for (int i = 0; i < 8; i++) {
-            board.setPiece(new Pawn(true,i,1),i, 1 );
-            board.setPiece( new Pawn(false,i, 6),i, 6);
+            board.setPiece(new Pawn(false,i,1),i, 1 );
+            board.setPiece( new Pawn(true,i, 6),i, 6);
         }
-        board.setPiece(new Queen(true, 3,0), 3, 0);
-        board.setPiece(new King(true,4,0), 4, 0);
-        board.setPiece(new Rook(true,0,0), 0, 0);
-        board.setPiece(new Rook(true,7,0), 7, 0);
-        board.setPiece(new Knight(true,1,0), 1, 0);
-        board.setPiece(new Knight(true,6,0), 6, 0);
-        board.setPiece(new Bishop(true,2,0), 2, 0);
-        board.setPiece(new Bishop(true,5,0), 5, 0);
+        board.setPiece(new Queen(false, 3,0), 3, 0);
+        board.setPiece(new King(false,4,0), 4, 0);
+        board.setPiece(new Rook(false,0,0), 0, 0);
+        board.setPiece(new Rook(false,7,0), 7, 0);
+        board.setPiece(new Knight(false,1,0), 1, 0);
+        board.setPiece(new Knight(false,6,0), 6, 0);
+        board.setPiece(new Bishop(false,2,0), 2, 0);
+        board.setPiece(new Bishop(false,5,0), 5, 0);
 
-        board.setPiece(new Queen(false,3,7), 3, 7);
-        board.setPiece(new King(false,4,7), 4, 7);
-        board.setPiece(new Rook(false,0,7), 0, 7);
-        board.setPiece(new Rook(false,7,7), 7, 7);
-        board.setPiece(new Knight(false,1,7), 1, 7);
-        board.setPiece(new Knight(false,6,7), 6, 7);
-        board.setPiece(new Bishop(false,2,7), 2, 7);
-        board.setPiece(new Bishop(false,5,7), 5, 7);
+        board.setPiece(new Queen(true,3,7), 3, 7);
+        board.setPiece(new King(true,4,7), 4, 7);
+        board.setPiece(new Rook(true,0,7), 0, 7);
+        board.setPiece(new Rook(true,7,7), 7, 7);
+        board.setPiece(new Knight(true,1,7), 1, 7);
+        board.setPiece(new Knight(true,6,7), 6, 7);
+        board.setPiece(new Bishop(true,2,7), 2, 7);
+        board.setPiece(new Bishop(true,5,7), 5, 7);
     }
 
     public void givePieceToPlayers(){
         for(int i = 0; i < 8; i++){
             int t = 7;
             for(int j = 0; j < 2; j++){
-                whitePlayer.addPiece(board.getPiece(i, j));
-                blackPlayer.addPiece(board.getPiece(7-i, t-j));
+                blackPlayer.addPiece(board.getPiece(i, j));
+                whitePlayer.addPiece(board.getPiece(7-i, t-j));
             }
         }
     }
@@ -118,6 +118,10 @@ public class ChessGame implements Serializable {
     // Retourne le joueur actuel (blanc ou noir)
     public Player getCurrentPlayer() {
         return currentPlayer;
+    }
+
+    public Player getOpponent() {
+        return (currentPlayer == whitePlayer) ? blackPlayer : whitePlayer;
     }
 
     // Alterner les tours

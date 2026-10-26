@@ -1,5 +1,6 @@
 package com.chessgame.model.pieces;
 
+import com.chessgame.controller.ChessGameController;
 import com.chessgame.model.Board;
 import com.chessgame.utils.Move;
 import com.chessgame.utils.TypePiece;
@@ -15,11 +16,13 @@ public abstract class Piece implements Serializable {
     private int y;
     protected boolean isWhite;
     public List<Move> validMoves = new ArrayList<>();
+    protected boolean alreadyMove;
 
     public Piece(boolean isWhite, int x, int y) {
         this.isWhite = isWhite;
         this.x = x;
         this.y = y;
+        this.alreadyMove = false;
     }
 
     public boolean isWhite() {
@@ -42,6 +45,14 @@ public abstract class Piece implements Serializable {
 
     public int getColumn() {
         return y;
+    }
+
+    public void setAlreadyMove(boolean alreadyMove) {
+        this.alreadyMove = alreadyMove;
+    }
+
+    public boolean getAlreadyMove() {
+        return this.alreadyMove;
     }
 
     public void move(Move move) {

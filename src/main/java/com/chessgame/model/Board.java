@@ -5,6 +5,8 @@ import com.chessgame.model.pieces.Piece;
 import com.chessgame.utils.Move;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Board implements Serializable {
 
@@ -13,6 +15,8 @@ public class Board implements Serializable {
     private static final int BOARD_SIZE = 8;
 
     public Move lastMove;  // Dernier mouvement effectué
+
+    public List<Move> moveHistory = new ArrayList<>();
 
     public Board() {
         board = new Piece[BOARD_SIZE][BOARD_SIZE];  // Initialise un tableau 8x8
@@ -47,11 +51,14 @@ public class Board implements Serializable {
         int startY = move.getStartY();
         int endX = move.getEndX();
         int endY = move.getEndY();
+        System.out.println("startX : " + startX + " startY : " + startY + " endX : " + endX + " endY : " + endY);
         if (isWithinBounds(startX,startY) && isWithinBounds(endX,endY)) {
             Piece piece = getPiece(startX, startY);
+            System.out.println(piece.validMoves.contains(move));
             if (piece != null && piece.validMoves.contains(move)) {
+                System.out.println("Piece : " + piece);
                 board[endX][endY] = piece;  // Place la pièce à la nouvelle position
-                board[startX][startY] = null;  // Vide l'ancienne position
+                board[startX][startY] = new Empty(true,startX,startY);  // Supprime la pièce de l'ancienne position
                 lastMove = move;
                 return true;
             }
@@ -83,6 +90,8 @@ public class Board implements Serializable {
             lastMove = null;
         }
     }
+
+    public List<Move> getMoveHistory(){ return moveHistory; }
 
 
     public Piece[][] getBoard() {

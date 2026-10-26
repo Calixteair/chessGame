@@ -1,5 +1,6 @@
 package com.chessgame.model.pieces;
 
+import com.chessgame.controller.ChessGameController;
 import com.chessgame.model.Board;
 import com.chessgame.utils.Move;
 import com.chessgame.utils.TypePiece;
@@ -22,7 +23,7 @@ public class Knight extends Piece {
             int newX = this.getX() + dx[i];
             int newY = this.getY() + dy[i];
             if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) {
-                if (board.getPiece(newX, newY) == null) {
+                if (board.getPiece(newX, newY).getType() == TypePiece.EMPTY) {
                     validMoves.add(new Move(this.getX(), this.getY(), newX, newY));
                 } else if (board.getPiece(newX, newY).isWhite() != this.isWhite()) {
                     validMoves.add(new Move(this.getX(), this.getY(), newX, newY));
