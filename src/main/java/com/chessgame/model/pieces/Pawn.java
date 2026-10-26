@@ -1,46 +1,69 @@
 package com.chessgame.model.pieces;
 
-import com.chessgame.controller.ChessGameController;
 import com.chessgame.model.Board;
 import com.chessgame.utils.Move;
 import com.chessgame.utils.TypePiece;
 
+import java.util.List;
+
+/**
+ * Pion : avance d'une case (deux depuis sa case de départ), prend en diagonale,
+ * prend en passant et se promeut en dame, tour, fou ou cavalier sur la dernière rangée.
+ */
 public class Pawn extends Piece {
 
-    private final TypePiece typePiece = TypePiece.PAWN;
+    private static final TypePiece[] PROMOTIONS = {TypePiece.QUEEN, TypePiece.ROOK, TypePiece.BISHOP, TypePiece.KNIGHT};
 
+    public Pawn(boolean white) {
+        super(white);
+    }
 
-    public Pawn(boolean isWhite, int x, int y) {
-        super(isWhite, x, y);
+    /** Sens de marche en y : les blancs montent (y décroît), les noirs descendent. */
+    public static int direction(boolean white) {
+        return white ? -1 : 1;
     }
 
     @Override
-    public void findValidMove(Board board) {
-        validMoves.clear();
-        int direction = isWhite() ? -1 : 1;
-        int newY = getY() + direction;
-        if (newY >= 0 && newY < 8) {
-            if (board.getPiece(getX(), newY).getType() == TypePiece.EMPTY) {
-                validMoves.add(new Move(getX(), getY(), getX(), newY));
-                if (!this.alreadyMove) {
-                    if (newY >= 0 && newY < 8 && board.getPiece(getX(), newY + direction).getType() == TypePiece.EMPTY) {
-                        validMoves.add(new Move(getX(), getY(), getX(), newY + direction, true));
-                    }
-                }
+    public void addPseudoLegalMoves(Board board, int x, int y, List<Move> out) {
+        int dir = direction(isWhite());
+        int startRow = isWhite() ? 6 : 1;
+        int oneStep = y + dir;
+        if (!Board.isInside(x, oneStep)) {
+            return;
+        }
+        if (board.getPiece(x, oneStep) == null) {
+            addWithPromotions(x, y, x, oneStep, out);
+            int twoSteps = y + 2 * dir;
+            if (y == startRow && board.getPiece(x, twoSteps) == null) {
+                out.add(new Move(x, y, x, twoSteps));
             }
-            if (getX() > 0 && board.getPiece(getX() - 1, newY ).getType() != TypePiece.EMPTY  && board.getPiece(getX() -1,newY ).isWhite() != isWhite()) {
-                validMoves.add(new Move(getX(), getY(), getX()-1, newY));
+        }
+        for (int dx = -1; dx <= 1; dx += 2) {
+            int tx = x + dx;
+            if (!Board.isInside(tx, oneStep)) {
+                continue;
             }
-            if (getX() < 7 && board.getPiece(getX() + 1, newY ).getType() != TypePiece.EMPTY && board.getPiece(getX()+ 1, newY ).isWhite() != isWhite()) {
-                validMoves.add(new Move(getX(), getY(), getX()+ 1, newY));
+            Piece target = board.getPiece(tx, oneStep);
+            boolean capture = target != null && target.isWhite() != isWhite();
+            boolean enPassant = board.isEnPassantSquare(tx, oneStep);
+            if (capture || enPassant) {
+                addWithPromotions(x, y, tx, oneStep, out);
             }
         }
     }
 
-
+    private void addWithPromotions(int x, int y, int tx, int ty, List<Move> out) {
+        if (ty == 0 || ty == 7) {
+            for (TypePiece promo : PROMOTIONS) {
+                out.add(new Move(x, y, tx, ty, promo));
+            }
+        } else {
+            out.add(new Move(x, y, tx, ty));
+        }
+    }
 
     @Override
     public TypePiece getType() {
-        return typePiece;
+        return TypePiece.PAWN;
     }
 }

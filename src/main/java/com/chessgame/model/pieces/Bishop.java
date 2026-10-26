@@ -1,90 +1,24 @@
 package com.chessgame.model.pieces;
 
-import com.chessgame.controller.ChessGameController;
 import com.chessgame.model.Board;
 import com.chessgame.utils.Move;
 import com.chessgame.utils.TypePiece;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Bishop extends Piece {
 
-    private final TypePiece typePiece = TypePiece.BISHOP;
-
-    public Bishop(boolean isWhite, int x, int y) {
-        super(isWhite, x, y);
+    public Bishop(boolean white) {
+        super(white);
     }
 
-
     @Override
-    public void findValidMove(Board board) {
-        validMoves.clear();
-        System.out.println("X: " + this.getX() + " Y: " + this.getY());
-        System.out.println("piece dep : " + board.getPiece(this.getX(), this.getY()).getType());
-
-        //diagonale 1
-        for(int i = 1; i < 8; i++){
-            if(this.getX() + i < 8 && this.getY() + i < 8){
-                if(board.getPiece(this.getX() + i, this.getY() + i).getType() == TypePiece.EMPTY){
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() + i, this.getY() + i));
-                }else if(board.getPiece(this.getX() + i, this.getY() + i).isWhite() != this.isWhite()){
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() + i, this.getY() + i));
-                    break;
-                }else{
-                    break;
-                }
-            }else{
-                break;
-            }
-        }
-        for (int i = 1; i < 8; i++) {
-            if (this.getX() - i >= 0 && this.getY() - i >= 0) {
-                if (board.getPiece(this.getX() - i, this.getY() - i).getType() == TypePiece.EMPTY) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() - i, this.getY() - i));
-                } else if (board.getPiece(this.getX() - i, this.getY() - i).isWhite() != this.isWhite()) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() - i, this.getY() - i));
-                    break;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        //diagonale 2
-        for (int i = 1; i < 8; i++) {
-            if (this.getX() + i < 8 && this.getY() - i >= 0) {
-                if (board.getPiece(this.getX() + i, this.getY() - i).getType() == TypePiece.EMPTY) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() + i, this.getY() - i));
-                } else if (board.getPiece(this.getX() + i, this.getY() - i).isWhite() != this.isWhite()) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() + i, this.getY() - i));
-                    break;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        for (int i = 1; i < 8; i++) {
-            if (this.getX() - i >= 0 && this.getY() + i < 8) {
-                if (board.getPiece(this.getX() - i, this.getY() + i).getType() == TypePiece.EMPTY) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() - i, this.getY() + i));
-                } else if (board.getPiece(this.getX() - i, this.getY() + i).isWhite() != this.isWhite()) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() - i, this.getY() + i));
-                    break;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
+    public void addPseudoLegalMoves(Board board, int x, int y, List<Move> out) {
+        slide(board, x, y, DIAGONAL, out);
     }
 
     @Override
     public TypePiece getType() {
-        return typePiece;
+        return TypePiece.BISHOP;
     }
 }

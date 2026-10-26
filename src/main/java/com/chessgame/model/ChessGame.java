@@ -1,195 +1,179 @@
 package com.chessgame.model;
 
-import com.chessgame.model.pieces.*;
+import com.chessgame.utils.Fen;
 import com.chessgame.utils.Move;
+import com.chessgame.utils.Notation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+/**
+ * Une partie d'échecs : position courante, historique, et arbitrage des règles
+ * (coups légaux, échec et mat, pat, nulles par 50 coups / triple répétition / matériel insuffisant,
+ * abandon).
+ *
+ * Point d'entrée unique pour jouer : {@link #play(Move)} refuse tout coup illégal.
+ */
 public class ChessGame implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    private Board board;
-    private Player whitePlayer;
-    private Player blackPlayer;
-    private Player currentPlayer;
-    private boolean gameOver;
+    private static final long serialVersionUID = 2L;
+    private static final int FIFTY_MOVE_HALFMOVES = 100;
+
+    private final String whiteName;
+    private final String blackName;
+    private final Board board;
+    private final List<Move> moves = new ArrayList<>();
+    private final List<String> sanHistory = new ArrayList<>();
+    private final Map<String, Integer> repetitions = new HashMap<>();
+    private List<Move> legalMoves;
+    private GameStatus status = GameStatus.ONGOING;
+    private Boolean winnerIsWhite;
 
     public ChessGame() {
-        initializeGame();
+        this("Blancs", "Noirs");
     }
 
-    public ChessGame(String pseudo1) {
-        initializeGame(pseudo1);
+    public ChessGame(String whiteName, String blackName) {
+        this(whiteName, blackName, Board.initial());
     }
 
-    public ChessGame(String pseudo1, String pseudo2) {
-        initializeGame(pseudo1, pseudo2);
+    /** Partie démarrant d'une position arbitraire (tests, problèmes). */
+    public ChessGame(String whiteName, String blackName, Board start) {
+        this.whiteName = whiteName;
+        this.blackName = blackName;
+        this.board = start;
+        recordPosition();
+        refreshStatus();
     }
 
-
-
-
-    // Initialise le plateau et les pièces
-    private void initializeGame() {
-        board = new Board();
-        whitePlayer = new Player(true, board, "White");
-        blackPlayer = new Player(false, board, "Black");
-        currentPlayer = whitePlayer;
-        gameOver = false;
-        putPieceOnBoard();
-        givePieceToPlayers();
-    }
-
-
-    private void initializeGame(String pseudo1) {
-        board = new Board();
-        whitePlayer = new Player(true, board, pseudo1);
-        blackPlayer = new Player(false, board, "Black");
-        currentPlayer = whitePlayer;
-        gameOver = false;
-        putPieceOnBoard();
-        givePieceToPlayers();
-    }
-
-    private void initializeGame(String pseudo1, String pseudo2) {
-        board = new Board();
-        whitePlayer = new Player(true, board, pseudo1);
-        blackPlayer = new Player(false, board, pseudo2);
-        currentPlayer = whitePlayer;
-        gameOver = false;
-        board.clearBoard();
-
-        putPieceOnBoard();
-        givePieceToPlayers();
-    }
-
-    public void setWhitePlayer(Player whitePlayer) {
-        this.whitePlayer = whitePlayer;
-    }
-
-    public void setBlackPlayer(Player blackPlayer) {
-        this.blackPlayer = blackPlayer;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
-
-
-
-
-    public void putPieceOnBoard(){
-
-        for (int i = 0; i < 8; i++) {
-            board.setPiece(new Pawn(false,i,1),i, 1 );
-            board.setPiece( new Pawn(true,i, 6),i, 6);
+    /**
+     * Joue un coup s'il est légal et que la partie n'est pas terminée.
+     * @return true si le coup a été joué, false s'il est refusé (illégal, partie finie…).
+     */
+    public synchronized boolean play(Move move) {
+        if (status.isOver() || move == null || !legalMoves.contains(move)) {
+            return false;
         }
-        board.setPiece(new Queen(false, 3,0), 3, 0);
-        board.setPiece(new King(false,4,0), 4, 0);
-        board.setPiece(new Rook(false,0,0), 0, 0);
-        board.setPiece(new Rook(false,7,0), 7, 0);
-        board.setPiece(new Knight(false,1,0), 1, 0);
-        board.setPiece(new Knight(false,6,0), 6, 0);
-        board.setPiece(new Bishop(false,2,0), 2, 0);
-        board.setPiece(new Bishop(false,5,0), 5, 0);
-
-        board.setPiece(new Queen(true,3,7), 3, 7);
-        board.setPiece(new King(true,4,7), 4, 7);
-        board.setPiece(new Rook(true,0,7), 0, 7);
-        board.setPiece(new Rook(true,7,7), 7, 7);
-        board.setPiece(new Knight(true,1,7), 1, 7);
-        board.setPiece(new Knight(true,6,7), 6, 7);
-        board.setPiece(new Bishop(true,2,7), 2, 7);
-        board.setPiece(new Bishop(true,5,7), 5, 7);
-    }
-
-    public void givePieceToPlayers(){
-        for(int i = 0; i < 8; i++){
-            int t = 7;
-            for(int j = 0; j < 2; j++){
-                blackPlayer.addPiece(board.getPiece(i, j));
-                whitePlayer.addPiece(board.getPiece(7-i, t-j));
-            }
-        }
-    }
-
-    // Retourne le joueur actuel (blanc ou noir)
-    public Player getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    public Player getOpponent() {
-        return (currentPlayer == whitePlayer) ? blackPlayer : whitePlayer;
-    }
-
-    // Alterner les tours
-    public void switchPlayer() {
-        currentPlayer = (currentPlayer == whitePlayer) ? blackPlayer : whitePlayer;
-    }
-
-    public boolean isKingInCheck(boolean isWhite) {
-        Player opponent = isWhite ? getBlackPlayer() : getWhitePlayer();
-
-        List<Piece> pieces = opponent.getPieces();
-
-        for(Piece piece : pieces){
-            // Vérifie si le roi est sur une destionation possible qui est dans validMoves de la piece
-            for (Move move : piece.getValidMoves()) {
-                if(move.getEndX() == currentPlayer.getKing().getX() && move.getEndY() == currentPlayer.getKing().getY()){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-
-
-    // Détermine si le joueur actuel est en échec et mat
-    public boolean isCheckMate() {
-        if(currentPlayer.isInCheck()){
-            for (Piece piece : currentPlayer.getPieces()) {
-                if (!piece.getValidMoves().isEmpty()) {
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
-
-    // Détermine si la partie est nulle (stalemate)
-    public boolean isStaleMate() {
-        for (Piece piece : currentPlayer.getPieces()) {
-            if (!piece.getValidMoves().isEmpty()) {
-                return false;
-            }
-        }
+        sanHistory.add(Notation.toSan(board, move, legalMoves));
+        board.apply(move);
+        moves.add(move);
+        recordPosition();
+        refreshStatus();
         return true;
     }
 
-    // Retourne l'état du jeu (fini ou non)
-    public boolean isGameOver() {
-        return gameOver;
+    /** Abandon du camp indiqué : l'adversaire gagne. */
+    public synchronized void resign(boolean white) {
+        endBy(GameStatus.RESIGNATION, !white);
     }
 
-    public Board getBoard() {
-        return board;
+    /** Un joueur a quitté la partie : l'autre gagne. */
+    public synchronized void abandon(boolean white) {
+        endBy(GameStatus.ABANDONED, !white);
     }
 
-    public Player getBlackPlayer() {
-        return blackPlayer;
+    private void endBy(GameStatus reason, boolean winnerWhite) {
+        if (!status.isOver()) {
+            status = reason;
+            winnerIsWhite = winnerWhite;
+            legalMoves = Collections.emptyList();
+        }
     }
 
-    public Player getWhitePlayer() {
-        return whitePlayer;
+    private void recordPosition() {
+        repetitions.merge(Fen.positionKey(board), 1, Integer::sum);
     }
 
-    public void setGameOver(boolean b) {
-        gameOver = b;
+    private void refreshStatus() {
+        legalMoves = board.legalMoves();
+        boolean whiteToMove = board.isWhiteToMove();
+        if (legalMoves.isEmpty()) {
+            if (board.isInCheck(whiteToMove)) {
+                status = GameStatus.CHECKMATE;
+                winnerIsWhite = !whiteToMove;
+            } else {
+                status = GameStatus.STALEMATE;
+            }
+        } else if (board.isInsufficientMaterial()) {
+            status = GameStatus.DRAW_INSUFFICIENT_MATERIAL;
+        } else if (board.getHalfmoveClock() >= FIFTY_MOVE_HALFMOVES) {
+            status = GameStatus.DRAW_FIFTY_MOVES;
+        } else if (repetitions.getOrDefault(Fen.positionKey(board), 0) >= 3) {
+            status = GameStatus.DRAW_REPETITION;
+        }
+        if (status.isOver()) {
+            legalMoves = Collections.emptyList();
+        }
     }
 
+    // --- Lecture de l'état ------------------------------------------------------------
 
+    public synchronized List<Move> getLegalMoves() {
+        return Collections.unmodifiableList(legalMoves);
+    }
+
+    public synchronized List<Move> getLegalMovesFrom(int x, int y) {
+        List<Move> from = new ArrayList<>();
+        for (Move m : legalMoves) {
+            if (m.getStartX() == x && m.getStartY() == y) {
+                from.add(m);
+            }
+        }
+        return from;
+    }
+
+    public synchronized boolean isWhiteToMove() {
+        return board.isWhiteToMove();
+    }
+
+    /** Vrai si le camp au trait est en échec (y compris en cas de mat). */
+    public synchronized boolean isCheck() {
+        return board.isInCheck(board.isWhiteToMove());
+    }
+
+    public synchronized GameStatus getStatus() {
+        return status;
+    }
+
+    public synchronized boolean isGameOver() {
+        return status.isOver();
+    }
+
+    /** true = blancs, false = noirs, null = pas de vainqueur (partie en cours ou nulle). */
+    public synchronized Boolean getWinnerIsWhite() {
+        return winnerIsWhite;
+    }
+
+    public synchronized String getFen() {
+        return Fen.toFen(board);
+    }
+
+    public synchronized List<String> getSanHistory() {
+        return new ArrayList<>(sanHistory);
+    }
+
+    public synchronized List<Move> getMoves() {
+        return new ArrayList<>(moves);
+    }
+
+    public synchronized Move getLastMove() {
+        return moves.isEmpty() ? null : moves.get(moves.size() - 1);
+    }
+
+    /** Copie de la position courante (le plateau interne n'est jamais exposé). */
+    public synchronized Board getBoard() {
+        return board.copy();
+    }
+
+    public String getWhiteName() {
+        return whiteName;
+    }
+
+    public String getBlackName() {
+        return blackName;
+    }
 }

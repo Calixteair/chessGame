@@ -1,68 +1,96 @@
 package com.chessgame.model.pieces;
 
-import com.chessgame.controller.ChessGameController;
 import com.chessgame.model.Board;
 import com.chessgame.utils.Move;
 import com.chessgame.utils.TypePiece;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Pièce d'échecs immuable : une couleur et un type.
+ * La position est portée par le plateau, pas par la pièce.
+ *
+ * Chaque sous-classe génère ses coups « pseudo-légaux » (sans vérifier si son propre roi
+ * reste en échec) ; le filtrage final est fait par {@link Board#legalMoves()}.
+ */
 public abstract class Piece implements Serializable {
 
+    public static final int[][] ORTHOGONAL = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    public static final int[][] DIAGONAL = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+    public static final int[][] ALL_DIRECTIONS = {
+            {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
-    private int x;
-    private int y;
-    protected boolean isWhite;
-    public List<Move> validMoves = new ArrayList<>();
-    protected boolean alreadyMove;
+    private final boolean white;
 
-    public Piece(boolean isWhite, int x, int y) {
-        this.isWhite = isWhite;
-        this.x = x;
-        this.y = y;
-        this.alreadyMove = false;
+    protected Piece(boolean white) {
+        this.white = white;
     }
 
     public boolean isWhite() {
-        return isWhite;
-    }
-
-    public abstract void findValidMove(Board board);
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getRow() {
-        return x;
-    }
-
-    public int getColumn() {
-        return y;
-    }
-
-    public void setAlreadyMove(boolean alreadyMove) {
-        this.alreadyMove = alreadyMove;
-    }
-
-    public boolean getAlreadyMove() {
-        return this.alreadyMove;
-    }
-
-    public void move(Move move) {
-        this.x = move.getEndX();
-        this.y = move.getEndY();
-    }
-
-    public List<Move> getValidMoves() {
-        return validMoves;
+        return white;
     }
 
     public abstract TypePiece getType();
+
+    /** Ajoute à {@code out} les coups pseudo-légaux de cette pièce située en (x, y). */
+    public abstract void addPseudoLegalMoves(Board board, int x, int y, List<Move> out);
+
+    /** Lettre FEN : majuscule pour les blancs, minuscule pour les noirs. */
+    public char getFenSymbol() {
+        char c = getType().getSymbol();
+        return white ? Character.toUpperCase(c) : c;
+    }
+
+    public static Piece create(TypePiece type, boolean white) {
+        switch (type) {
+            case PAWN: return new Pawn(white);
+            case KNIGHT: return new Knight(white);
+            case BISHOP: return new Bishop(white);
+            case ROOK: return new Rook(white);
+            case QUEEN: return new Queen(white);
+            case KING: return new King(white);
+            default: throw new IllegalArgumentException("Type inconnu : " + type);
+        }
+    }
+
+    /** Déplacement glissant (tour, fou, dame) : avance jusqu'au bord, une pièce amie ou une prise. */
+    protected void slide(Board board, int x, int y, int[][] directions, List<Move> out) {
+        for (int[] d : directions) {
+            int nx = x + d[0];
+            int ny = y + d[1];
+            while (Board.isInside(nx, ny)) {
+                Piece target = board.getPiece(nx, ny);
+                if (target == null) {
+                    out.add(new Move(x, y, nx, ny));
+                } else {
+                    if (target.isWhite() != white) {
+                        out.add(new Move(x, y, nx, ny));
+                    }
+                    break;
+                }
+                nx += d[0];
+                ny += d[1];
+            }
+        }
+    }
+
+    /** Déplacement d'une case par décalage (cavalier, roi). */
+    protected void step(Board board, int x, int y, int[][] offsets, List<Move> out) {
+        for (int[] d : offsets) {
+            int nx = x + d[0];
+            int ny = y + d[1];
+            if (Board.isInside(nx, ny)) {
+                Piece target = board.getPiece(nx, ny);
+                if (target == null || target.isWhite() != white) {
+                    out.add(new Move(x, y, nx, ny));
+                }
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(getFenSymbol());
+    }
 }

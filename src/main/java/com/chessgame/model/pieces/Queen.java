@@ -1,142 +1,24 @@
 package com.chessgame.model.pieces;
 
-import com.chessgame.controller.ChessGameController;
 import com.chessgame.model.Board;
 import com.chessgame.utils.Move;
 import com.chessgame.utils.TypePiece;
 
+import java.util.List;
+
 public class Queen extends Piece {
 
-    private final TypePiece typePiece = TypePiece.QUEEN;
-
-    public Queen(boolean isWhite, int x, int y) {
-        super(isWhite, x, y);
+    public Queen(boolean white) {
+        super(white);
     }
 
     @Override
-    public void findValidMove(Board board) {
-        validMoves.clear();
-        //diagonale 1
-        for(int i = 1; i < 8; i++){
-            if(this.getX() + i < 8 && this.getY() + i < 8){
-                if(board.getPiece(this.getX() + i, this.getY() + i).getType() == TypePiece.EMPTY){
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() + i, this.getY() + i));
-                }else if(board.getPiece(this.getX() + i, this.getY() + i).isWhite() != this.isWhite()){
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() + i, this.getY() + i));
-                    break;
-                }else{
-                    break;
-                }
-            }else{
-                break;
-            }
-        }
-        for (int i = 1; i < 8; i++) {
-            if (this.getX() - i >= 0 && this.getY() - i >= 0) {
-                if (board.getPiece(this.getX() - i, this.getY() - i).getType() == TypePiece.EMPTY) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() - i, this.getY() - i));
-                } else if (board.getPiece(this.getX() - i, this.getY() - i).isWhite() != this.isWhite()) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() - i, this.getY() - i));
-                    break;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        //diagonale 2
-        for (int i = 1; i < 8; i++) {
-            if (this.getX() + i < 8 && this.getY() - i >= 0) {
-                if (board.getPiece(this.getX() + i, this.getY() - i).getType() == TypePiece.EMPTY) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() + i, this.getY() - i));
-                } else if (board.getPiece(this.getX() + i, this.getY() - i).isWhite() != this.isWhite()) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() + i, this.getY() - i));
-                    break;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        for (int i = 1; i < 8; i++) {
-            if (this.getX() - i >= 0 && this.getY() + i < 8) {
-                if (board.getPiece(this.getX() - i, this.getY() + i).getType() == TypePiece.EMPTY) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() - i, this.getY() + i));
-                } else if (board.getPiece(this.getX() - i, this.getY() + i).isWhite() != this.isWhite()) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() - i, this.getY() + i));
-                    break;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-
-        //horizontal
-        for (int i = 1; i < 8; i++) {
-            if (this.getX() + i < 8) {
-                if (board.getPiece(this.getX() + i, this.getY()).getType() == TypePiece.EMPTY) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() + i, this.getY()));
-                } else if (board.getPiece(this.getX() + i, this.getY()).isWhite() != this.isWhite()) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() + i, this.getY()));
-                    break;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        for (int i = 1; i < 8; i++) {
-            if (this.getX() - i >= 0) {
-                if (board.getPiece(this.getX() - i, this.getY()).getType() == TypePiece.EMPTY) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() - i, this.getY()));
-                } else if (board.getPiece(this.getX() - i, this.getY()).isWhite() != this.isWhite()) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX() - i, this.getY()));
-                    break;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        //vertical
-        for (int i = 1; i < 8; i++) {
-            if (this.getY() + i < 8) {
-                if (board.getPiece(this.getX(), this.getY() + i).getType() == TypePiece.EMPTY) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX(), this.getY() + i));
-                } else if (board.getPiece(this.getX(), this.getY() + i).isWhite() != this.isWhite()) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX(), this.getY() + i));
-                    break;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        for (int i = 1; i < 8; i++) {
-            if (this.getY() - i >= 0) {
-                if (board.getPiece(this.getX(), this.getY() - i).getType() == TypePiece.EMPTY) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX(), this.getY() - i));
-                } else if (board.getPiece(this.getX(), this.getY() - i).isWhite() != this.isWhite()) {
-                    validMoves.add(new Move(this.getX(), this.getY(), this.getX(), this.getY() - i));
-                    break;
-                } else {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
+    public void addPseudoLegalMoves(Board board, int x, int y, List<Move> out) {
+        slide(board, x, y, ALL_DIRECTIONS, out);
     }
 
     @Override
     public TypePiece getType() {
-        return typePiece;
+        return TypePiece.QUEEN;
     }
 }
