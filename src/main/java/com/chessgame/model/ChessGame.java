@@ -20,34 +20,26 @@ import java.util.Map;
  */
 public class ChessGame implements Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
     private static final int FIFTY_MOVE_HALFMOVES = 100;
 
-    private final String whiteName;
-    private final String blackName;
     private final Board board;
-    private final List<Move> moves = new ArrayList<>();
     private final List<String> sanHistory = new ArrayList<>();
     private final Map<String, Integer> repetitions = new HashMap<>();
     private List<Move> legalMoves;
+    private boolean check;
+    private Move lastMove;
     private GameStatus status = GameStatus.ONGOING;
     private Boolean winnerIsWhite;
 
     public ChessGame() {
-        this("Blancs", "Noirs");
-    }
-
-    public ChessGame(String whiteName, String blackName) {
-        this(whiteName, blackName, Board.initial());
+        this(Board.initial());
     }
 
     /** Partie démarrant d'une position arbitraire (tests, problèmes). */
-    public ChessGame(String whiteName, String blackName, Board start) {
-        this.whiteName = whiteName;
-        this.blackName = blackName;
+    public ChessGame(Board start) {
         this.board = start;
-        recordPosition();
-        refreshStatus();
+        refreshStatus(recordPosition());
     }
 
     /**
@@ -58,11 +50,11 @@ public class ChessGame implements Serializable {
         if (status.isOver() || move == null || !legalMoves.contains(move)) {
             return false;
         }
-        sanHistory.add(Notation.toSan(board, move, legalMoves));
+        String san = Notation.toSan(board, move, legalMoves);
         board.apply(move);
-        moves.add(move);
-        recordPosition();
-        refreshStatus();
+        lastMove = move;
+        refreshStatus(recordPosition());
+        sanHistory.add(san + Notation.checkSuffix(check, status == GameStatus.CHECKMATE));
         return true;
     }
 
@@ -84,25 +76,23 @@ public class ChessGame implements Serializable {
         }
     }
 
-    private void recordPosition() {
-        repetitions.merge(Fen.positionKey(board), 1, Integer::sum);
+    /** Compte la position courante et renvoie son nombre d'occurrences. */
+    private int recordPosition() {
+        return repetitions.merge(Fen.positionKey(board), 1, Integer::sum);
     }
 
-    private void refreshStatus() {
+    private void refreshStatus(int occurrences) {
         legalMoves = board.legalMoves();
         boolean whiteToMove = board.isWhiteToMove();
+        check = board.isInCheck(whiteToMove);
         if (legalMoves.isEmpty()) {
-            if (board.isInCheck(whiteToMove)) {
-                status = GameStatus.CHECKMATE;
-                winnerIsWhite = !whiteToMove;
-            } else {
-                status = GameStatus.STALEMATE;
-            }
+            status = check ? GameStatus.CHECKMATE : GameStatus.STALEMATE;
+            winnerIsWhite = check ? !whiteToMove : null;
         } else if (board.isInsufficientMaterial()) {
             status = GameStatus.DRAW_INSUFFICIENT_MATERIAL;
         } else if (board.getHalfmoveClock() >= FIFTY_MOVE_HALFMOVES) {
             status = GameStatus.DRAW_FIFTY_MOVES;
-        } else if (repetitions.getOrDefault(Fen.positionKey(board), 0) >= 3) {
+        } else if (occurrences >= 3) {
             status = GameStatus.DRAW_REPETITION;
         }
         if (status.isOver()) {
@@ -132,7 +122,7 @@ public class ChessGame implements Serializable {
 
     /** Vrai si le camp au trait est en échec (y compris en cas de mat). */
     public synchronized boolean isCheck() {
-        return board.isInCheck(board.isWhiteToMove());
+        return check;
     }
 
     public synchronized GameStatus getStatus() {
@@ -153,27 +143,15 @@ public class ChessGame implements Serializable {
     }
 
     public synchronized List<String> getSanHistory() {
-        return new ArrayList<>(sanHistory);
-    }
-
-    public synchronized List<Move> getMoves() {
-        return new ArrayList<>(moves);
+        return Collections.unmodifiableList(new ArrayList<>(sanHistory));
     }
 
     public synchronized Move getLastMove() {
-        return moves.isEmpty() ? null : moves.get(moves.size() - 1);
+        return lastMove;
     }
 
     /** Copie de la position courante (le plateau interne n'est jamais exposé). */
     public synchronized Board getBoard() {
         return board.copy();
-    }
-
-    public String getWhiteName() {
-        return whiteName;
-    }
-
-    public String getBlackName() {
-        return blackName;
     }
 }

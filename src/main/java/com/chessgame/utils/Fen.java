@@ -15,9 +15,8 @@ public final class Fen {
     }
 
     public static String toFen(Board board) {
-        String ep = board.hasEnPassantSquare()
-                ? Move.squareName(board.getEnPassantX(), board.getEnPassantY()) : "-";
-        return placementAndRights(board) + " " + ep + " " + board.getHalfmoveClock() + " " + board.getFullmoveNumber();
+        return placementAndRights(board) + " " + enPassantField(board, board.hasEnPassantSquare())
+                + " " + board.getHalfmoveClock() + " " + board.getFullmoveNumber();
     }
 
     /**
@@ -25,9 +24,11 @@ public final class Fen {
      * de roque, et case en passant seulement si une prise en passant est réellement possible.
      */
     public static String positionKey(Board board) {
-        String ep = board.hasEnPassantCapture()
-                ? Move.squareName(board.getEnPassantX(), board.getEnPassantY()) : "-";
-        return placementAndRights(board) + " " + ep;
+        return placementAndRights(board) + " " + enPassantField(board, board.hasEnPassantCapture());
+    }
+
+    private static String enPassantField(Board board, boolean shown) {
+        return shown ? Move.squareName(board.getEnPassantX(), board.getEnPassantY()) : "-";
     }
 
     private static String placementAndRights(Board board) {
@@ -83,7 +84,8 @@ public final class Fen {
         board.setCastle(false, true, fields[2].contains("k"));
         board.setCastle(false, false, fields[2].contains("q"));
         if (!"-".equals(fields[3])) {
-            board.setEnPassant(fields[3].charAt(0) - 'a', '8' - fields[3].charAt(1));
+            int[] ep = Move.parseSquare(fields[3]);
+            board.setEnPassant(ep[0], ep[1]);
         }
         board.setHalfmoveClock(fields.length > 4 ? Integer.parseInt(fields[4]) : 0);
         board.setFullmoveNumber(fields.length > 5 ? Integer.parseInt(fields[5]) : 1);

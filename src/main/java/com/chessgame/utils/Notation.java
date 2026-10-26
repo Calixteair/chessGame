@@ -14,17 +14,12 @@ public final class Notation {
     }
 
     /**
+     * SAN sans suffixe d'échec (voir {@link #checkSuffix}).
      * @param before position avant le coup
      * @param move   coup légal dans {@code before}
      * @param legal  coups légaux de {@code before} (pour lever les ambiguïtés)
      */
     public static String toSan(Board before, Move move, List<Move> legal) {
-        Board after = before.copy();
-        after.apply(move);
-        return body(before, move, legal) + suffix(after);
-    }
-
-    private static String body(Board before, Move move, List<Move> legal) {
         Piece piece = before.getPiece(move.getStartX(), move.getStartY());
         int dx = move.getEndX() - move.getStartX();
         if (piece.getType() == TypePiece.KING && Math.abs(dx) == 2) {
@@ -41,6 +36,11 @@ public final class Notation {
         }
         char letter = Character.toUpperCase(piece.getType().getSymbol());
         return letter + disambiguation(before, move, legal) + (capture ? "x" : "") + target;
+    }
+
+    /** "+" si le coup donne échec, "#" s'il mate, "" sinon. */
+    public static String checkSuffix(boolean check, boolean mate) {
+        return mate ? "#" : check ? "+" : "";
     }
 
     /** Ajoute la colonne, la rangée, ou les deux si une autre pièce identique peut aller sur la même case. */
@@ -67,12 +67,5 @@ public final class Notation {
             return square.substring(0, 1);
         }
         return sameRank ? square : square.substring(1);
-    }
-
-    private static String suffix(Board after) {
-        if (!after.isInCheck(after.isWhiteToMove())) {
-            return "";
-        }
-        return after.legalMoves().isEmpty() ? "#" : "+";
     }
 }

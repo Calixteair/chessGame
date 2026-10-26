@@ -57,6 +57,11 @@ public final class Move implements Serializable {
         return "" + (char) ('a' + x) + (8 - y);
     }
 
+    /** Case algébrique → {x, y}, ex. "e2" → {4, 6}. */
+    public static int[] parseSquare(String square) {
+        return new int[]{square.charAt(0) - 'a', '8' - square.charAt(1)};
+    }
+
     /** Notation UCI : "e2e4", "e7e8q". */
     public String toUci() {
         String uci = squareName(startX, startY) + squareName(endX, endY);
@@ -72,8 +77,9 @@ public final class Move implements Serializable {
             throw new IllegalArgumentException("Coup UCI invalide : " + uci);
         }
         TypePiece promo = uci.length() == 5 ? TypePiece.fromSymbol(uci.charAt(4)) : null;
-        return new Move(uci.charAt(0) - 'a', '8' - uci.charAt(1),
-                uci.charAt(2) - 'a', '8' - uci.charAt(3), promo);
+        int[] from = parseSquare(uci.substring(0, 2));
+        int[] to = parseSquare(uci.substring(2, 4));
+        return new Move(from[0], from[1], to[0], to[1], promo);
     }
 
     @Override

@@ -21,7 +21,7 @@ class ChessGameTest {
     }
 
     private static ChessGame fromFen(String fen) {
-        return new ChessGame("W", "B", Fen.fromFen(fen));
+        return new ChessGame(Fen.fromFen(fen));
     }
 
     @Test

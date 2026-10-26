@@ -27,8 +27,6 @@ public enum TypePiece {
         throw new IllegalArgumentException("Pièce inconnue : " + c);
     }
 
-    /** Pièces autorisées pour une promotion. */
-    public boolean isPromotionTarget() {
-        return this == QUEEN || this == ROOK || this == BISHOP || this == KNIGHT;
-    }
+    /** Pièces autorisées pour une promotion, de la plus forte à la plus faible. */
+    public static final TypePiece[] PROMOTIONS = {QUEEN, ROOK, BISHOP, KNIGHT};
 }

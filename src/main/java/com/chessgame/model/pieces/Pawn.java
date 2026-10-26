@@ -12,8 +12,6 @@ import java.util.List;
  */
 public class Pawn extends Piece {
 
-    private static final TypePiece[] PROMOTIONS = {TypePiece.QUEEN, TypePiece.ROOK, TypePiece.BISHOP, TypePiece.KNIGHT};
-
     public Pawn(boolean white) {
         super(white);
     }
@@ -54,7 +52,7 @@ public class Pawn extends Piece {
 
     private void addWithPromotions(int x, int y, int tx, int ty, List<Move> out) {
         if (ty == 0 || ty == 7) {
-            for (TypePiece promo : PROMOTIONS) {
+            for (TypePiece promo : TypePiece.PROMOTIONS) {
                 out.add(new Move(x, y, tx, ty, promo));
             }
         } else {

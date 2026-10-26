@@ -151,8 +151,7 @@ public class Board implements Serializable {
 
     /** Vrai si la case (x, y) est attaquée par au moins une pièce de la couleur {@code byWhite}. */
     public boolean isAttacked(int x, int y, boolean byWhite) {
-        int pawnRow = y - Pawn.direction(byWhite);
-        if (isPieceAt(x - 1, pawnRow, TypePiece.PAWN, byWhite) || isPieceAt(x + 1, pawnRow, TypePiece.PAWN, byWhite)) {
+        if (pawnOnAdjacentFile(x, y - Pawn.direction(byWhite), byWhite)) {
             return true;
         }
         for (int[] j : Knight.JUMPS) {
@@ -187,6 +186,11 @@ public class Board implements Serializable {
             }
         }
         return false;
+    }
+
+    /** Pion de la couleur donnée en (x - 1, row) ou (x + 1, row). */
+    private boolean pawnOnAdjacentFile(int x, int row, boolean white) {
+        return isPieceAt(x - 1, row, TypePiece.PAWN, white) || isPieceAt(x + 1, row, TypePiece.PAWN, white);
     }
 
     private boolean isPieceAt(int x, int y, TypePiece type, boolean white) {
@@ -305,9 +309,7 @@ public class Board implements Serializable {
         if (!hasEnPassantSquare()) {
             return false;
         }
-        int pawnRow = enPassantY - Pawn.direction(whiteToMove);
-        return isPieceAt(enPassantX - 1, pawnRow, TypePiece.PAWN, whiteToMove)
-                || isPieceAt(enPassantX + 1, pawnRow, TypePiece.PAWN, whiteToMove);
+        return pawnOnAdjacentFile(enPassantX, enPassantY - Pawn.direction(whiteToMove), whiteToMove);
     }
 
     /**
